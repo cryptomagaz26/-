@@ -54,7 +54,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-emerald-500/30">
       {view !== 'admin' && <Navbar onHomeClick={handleHomeClick} />}
       <main>
         {view === 'home' && (<HomeView courses={courses} previews={previews} onCourseSelect={handleCourseSelect} />)}
@@ -65,41 +65,41 @@ const App: React.FC = () => {
       </main>
 
       {view === 'home' && (
-        <footer className="bg-black border-t border-slate-900 py-16 mt-20">
+        <footer className="bg-black border-t border-zinc-900 py-16 mt-20">
           <div className="max-w-7xl mx-auto px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
               <div className="col-span-1 md:col-span-2 space-y-6">
                 <span className="font-black text-3xl italic tracking-tighter text-white">cryptomagz</span>
-                <p className="text-sm text-slate-400 font-medium max-w-sm leading-relaxed break-keep">
+                <p className="text-sm text-zinc-400 font-medium max-w-sm leading-relaxed break-keep">
                   검증된 데이터와 실전 노하우로 당신의 자산 가치를 극대화하는 투자 전문 교육 플랫폼입니다.
                 </p>
               </div>
               <div className="space-y-4">
-                <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">학습 메뉴</h4>
-                <ul className="space-y-2 text-sm text-slate-400 font-bold">
+                <h4 className="text-xs font-black uppercase tracking-widest text-zinc-500">학습 메뉴</h4>
+                <ul className="space-y-2 text-sm text-zinc-400 font-bold">
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">전체 강의</li>
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">자산 분석 툴</li>
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">수강 후기</li>
                 </ul>
               </div>
               <div className="space-y-4">
-                <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">고객 지원</h4>
-                <ul className="space-y-2 text-sm text-slate-400 font-bold">
+                <h4 className="text-xs font-black uppercase tracking-widest text-zinc-500">고객 지원</h4>
+                <ul className="space-y-2 text-sm text-zinc-400 font-bold">
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">공지사항</li>
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">자주 묻는 질문</li>
                   <li className="hover:text-emerald-400 cursor-pointer transition-colors">1:1 문의</li>
                 </ul>
               </div>
             </div>
-            <div className="border-t border-slate-900 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-              <div className="text-[11px] text-slate-500 space-y-2 font-medium">
+            <div className="border-t border-zinc-900 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+              <div className="text-[11px] text-zinc-500 space-y-2 font-medium">
                 <p>주식회사 크립토매거진 | 대표자 : 송진우</p>
                 <p>서울특별시 강남구 논현로 106길 16-4(역삼동)</p>
                 <p>사업자등록번호 : 365-86-02985 | 상담전화 : 02-6952-3171</p>
                 <p>개인정보보호책임자 : 송진우 대표</p>
                 <p className="mt-4">© 2025 cryptomagz. ALL RIGHTS RESERVED.</p>
               </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-black text-slate-400">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-black text-zinc-400">
                 <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">개인정보처리방침</button>
                 <button onClick={() => setIsTermsOpen(true)} className="hover:text-white transition-colors">이용약관</button>
                 <button className="hover:text-white transition-colors">사업자정보확인</button>

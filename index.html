@@ -7,11 +7,16 @@
     <title>Cryptomagz Academy | 프리미엄 재테크 교육</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        // 브라우저 환경에서 process.env 참조 에러 방지 (Netlify 환경 대응)
+        window.process = { env: { API_KEY: "" } };
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000; /* 완전한 블랙으로 변경 */
+            background-color: #000000;
             color: #f1f5f9;
+            margin: 0;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
@@ -20,17 +25,16 @@
             background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #1e293b;
+            background: #27272a;
             border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #334155;
+            background: #3f3f46;
         }
-        /* 불필요한 포커스 링 제거 */
         *:focus { outline: none; }
     </style>
 </head>
-<body class="bg-black text-slate-100 overflow-x-hidden">
+<body class="bg-black text-zinc-100 overflow-x-hidden">
     <div id="root"></div>
     <script type="importmap">
 {
@@ -45,5 +49,7 @@
   }
 }
 </script>
+    <!-- 메인 엔트리 포인트 스크립트 추가 (빈 화면 해결의 핵심) -->
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
