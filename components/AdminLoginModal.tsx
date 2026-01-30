@@ -22,8 +22,8 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
     setIsLoggingIn(true);
     setError('');
 
-    // 어드민 계정 정보 검증: ID(cryptomagz2026), PW(zmflqxh@123)
-    if (adminId === 'cryptomagz2026' && password === 'zmflqxh@123') {
+    // 어드민 계정 정보 변경: ID(12345), PW(12345)
+    if (adminId === '12345' && password === '12345') {
       setTimeout(() => {
         onLoginSuccess();
         setIsLoggingIn(false);
@@ -45,9 +45,6 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
       ></div>
       
       <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 md:p-12 shadow-2xl animate-in zoom-in-95 duration-300 overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[50px] -mr-16 -mt-16" />
-        
         <button 
           onClick={onClose} 
           className="absolute top-6 right-6 p-2 hover:bg-slate-800 rounded-full transition-all text-slate-500 hover:text-white"
@@ -59,7 +56,7 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
           <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Lock className="text-emerald-500" size={32} />
           </div>
-          <h2 className="text-2xl font-black italic mb-2 tracking-tighter uppercase">Admin Access</h2>
+          <h2 className="text-2xl font-black italic mb-2 tracking-tighter uppercase text-white">Admin Access</h2>
           <p className="text-slate-500 text-sm font-medium">관리자 전용 로그인 페이지입니다.</p>
         </div>
 

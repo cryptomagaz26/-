@@ -21,14 +21,11 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formData.agreement) {
       alert('개인정보처리방침에 동의해 주세요.');
       return;
     }
-
     setIsSubmitting(true);
-
     try {
       const response = await fetch('https://formspree.io/f/mbdyapkp', {
         method: 'POST',
@@ -43,11 +40,9 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
           동의여부: formData.agreement ? '동의함' : '동의안함'
         })
       });
-
       if (response.ok) {
         setIsSubmitted(true);
         setFormData({ name: '', phone: '', course: '', agreement: false });
-        // 5초 후 다시 폼을 보여줄 수 있도록 설정 (사용자 경험)
         setTimeout(() => setIsSubmitted(false), 8000);
       } else {
         alert('서버 전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
@@ -62,7 +57,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-8 py-12">
-      {/* Hero Section */}
+      {/* Hero Section - Clean background without patterns */}
       <section className="relative mb-24 rounded-[3rem] overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl">
         <div className="relative z-10 p-10 md:p-20 max-w-5xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest mb-6 backdrop-blur">
@@ -85,7 +80,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
             </button>
             <button 
               onClick={() => document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-slate-800/50 backdrop-blur text-white px-8 py-4 rounded-2xl font-black text-lg border border-white/10 hover:bg-slate-800 transition-all"
+              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-black text-lg border border-white/10 hover:bg-slate-700 transition-all"
             >
               수강 문의 (1:1)
             </button>
@@ -93,7 +88,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
         </div>
       </section>
 
-      {/* Feature Cards */}
+      {/* Feature Cards - Removed diagonal lines from background */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 relative">
         {[
           { icon: <TrendingUp className="text-emerald-400" />, title: "기업 재무 분석 교육", desc: "데이터 기반 매크로 분석" },
@@ -150,7 +145,6 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
             ))}
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {courses.map((course) => (
             <div 
@@ -196,7 +190,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
         </div>
       </section>
 
-      {/* Consultation Form */}
+      {/* Consultation Form - Cleaned background */}
       <section id="consultation-form" className="relative py-20 px-8 md:px-16 rounded-[4rem] bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
         <div className="relative z-10 max-w-4xl mx-auto">
           <div className="text-center mb-16">
@@ -248,7 +242,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full py-6 bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-[2rem] font-black text-xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-6 bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-[2rem] font-black text-xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>전송 중... <Loader2 size={24} className="animate-spin" /></>

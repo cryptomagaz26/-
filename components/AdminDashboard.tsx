@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { Course, PreviewVideo, Lesson } from '../types';
-import { Settings, Plus, Trash2, Upload, Youtube, Save, ArrowLeft, RefreshCw, Globe, Loader2, Lock, FileCode, CheckCircle2, AlertCircle, Image as ImageIcon, User as UserIcon, BookOpen, PlusCircle } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Course, PreviewVideo } from '../types';
+import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload } from 'lucide-react';
 
 interface AdminDashboardProps {
   courses: Course[];
@@ -18,6 +18,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
   const [ghPath, setGhPath] = useState(localStorage.getItem('cm_gh_path') || 'data/mockData.ts');
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const utf8ToBase64 = (str: string) => {
     const encoder = new TextEncoder();
@@ -77,6 +79,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
     onUpdateCourses(courses.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
 
+  const handleImageUpload = (id: string, type: 'preview' | 'course', file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      if (type === 'preview') {
+        handlePreviewUpdate(id, 'thumbnail', base64String);
+      } else {
+        handleCourseUpdate(id, 'thumbnail', base64String);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       <header className="h-20 bg-slate-900 border-b border-slate-800 px-8 flex items-center justify-between sticky top-0 z-50">
@@ -96,38 +111,161 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
             {previews.map((preview) => (
               <div key={preview.id} className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] space-y-4">
-                <div className="flex justify-between items-center"><Youtube className="text-red-500" size={24} /><button onClick={() => onUpdatePreviews(previews.filter(p => p.id !== preview.id))} className="text-slate-600 hover:text-red-500 transition-colors"><Trash2 size={20} /></button></div>
-                <input value={preview.title} onChange={(e) => handlePreviewUpdate(preview.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-bold" placeholder="제목" />
-                <input value={preview.youtubeId} onChange={(e) => handlePreviewUpdate(preview.id, 'youtubeId', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-mono" placeholder="YouTube ID" />
+                <div className="flex justify-between items-center">
+                  <Youtube className="text-red-500" size={24} />
+                  <button onClick={() => onUpdatePreviews(previews.filter(p => p.id !== preview.id))} className="text-slate-600 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
+                </div>
+                
+                <div className="relative group aspect-video rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 mb-4">
+                  <img src={preview.thumbnail} alt={preview.title} className="w-full h-full object-cover" />
+                  <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
+                    <Upload className="text-white mb-2" size={32} />
+                    <span className="text-xs font-black text-white uppercase tracking-widest">썸네일 업로드</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(preview.id, 'preview', file);
+                      }} 
+                    />
+                  </label>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">영상 제목</label>
+                  <input value={preview.title} onChange={(e) => handlePreviewUpdate(preview.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-bold" placeholder="제목" />
+                  
+                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">YouTube ID / Link</label>
+                  <input value={preview.youtubeId} onChange={(e) => handlePreviewUpdate(preview.id, 'youtubeId', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-mono" placeholder="YouTube ID" />
+                </div>
               </div>
             ))}
+            
+            <button 
+              onClick={() => onUpdatePreviews([...previews, { id: Date.now().toString(), title: '새 영상', youtubeId: '', thumbnail: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&w=800&q=80' }])}
+              className="border-2 border-dashed border-slate-800 rounded-[2rem] p-8 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-500 hover:border-emerald-500/50 transition-all gap-4 bg-slate-900/20"
+            >
+              <ImageIcon size={48} />
+              <span className="font-black uppercase tracking-widest">인사이트 비디오 추가</span>
+            </button>
           </div>
         )}
+
         {activeTab === 'curriculum' && (
           <div className="space-y-8 animate-in fade-in">
             {courses.map(course => (
               <div key={course.id} className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-8 space-y-6">
-                <div className="flex gap-6 items-start">
-                  <div className="w-48 h-32 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex-shrink-0"><img src={course.thumbnail} className="w-full h-full object-cover" /></div>
-                  <div className="flex-1 space-y-4">
-                    <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-black" />
-                    <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm" rows={2} />
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="w-full md:w-64 space-y-4 flex-shrink-0">
+                    <div className="relative group aspect-[4/3] rounded-3xl overflow-hidden border border-slate-800 bg-slate-950">
+                      <img src={course.thumbnail} className="w-full h-full object-cover" alt={course.title} />
+                      <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
+                        <Upload className="text-white mb-2" size={32} />
+                        <span className="text-xs font-black text-white uppercase tracking-widest">강의 썸네일 변경</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(course.id, 'course', file);
+                          }} 
+                        />
+                      </label>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">카테고리</label>
+                      <input value={course.category} onChange={(e) => handleCourseUpdate(course.id, 'category', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-bold" />
+                    </div>
+                  </div>
+
+                  <div className="flex-1 space-y-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 space-y-2 mr-4">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의명</label>
+                        <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-black text-lg" />
+                      </div>
+                      <button onClick={() => onUpdateCourses(courses.filter(c => c.id !== course.id))} className="p-3 text-slate-600 hover:text-red-500 transition-colors bg-slate-950 rounded-xl border border-slate-800"><Trash2 size={20} /></button>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의 상세 설명</label>
+                      <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm leading-relaxed" rows={3} />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강사명</label>
+                        <input value={course.instructor} onChange={(e) => handleCourseUpdate(course.id, 'instructor', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">수강료</label>
+                        <input value={course.price} onChange={(e) => handleCourseUpdate(course.id, 'price', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm font-bold" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+
         {activeTab === 'sync' && (
           <div className="max-w-xl mx-auto space-y-6 animate-in fade-in">
             <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] space-y-6">
-              <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-500">GitHub Token</label><input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono" placeholder="ghp_..." /></div>
-              <button onClick={handleSyncToGithub} disabled={isSyncing} className="w-full py-5 rounded-2xl bg-indigo-600 text-white font-black hover:bg-indigo-500 flex items-center justify-center gap-3 transition-all">{isSyncing ? <Loader2 className="animate-spin" /> : <RefreshCw />} GitHub 동기화 실행</button>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                  <RefreshCw className="text-indigo-400" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-black text-white italic uppercase tracking-tighter">GitHub Data Sync</h3>
+                  <p className="text-xs text-slate-500 font-medium">로컬 변경사항을 깃허브 저장소와 동기화합니다.</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-500">GitHub Token</label>
+                  <input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs" placeholder="ghp_..." />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-500">Repository (Owner/Repo)</label>
+                  <input type="text" value={ghRepo} onChange={(e) => setGhRepo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm" placeholder="username/my-academy" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-500">Data File Path</label>
+                  <input type="text" value={ghPath} onChange={(e) => setGhPath(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm" placeholder="src/data/mockData.ts" />
+                </div>
+              </div>
+
+              {syncStatus && (
+                <div className={`p-4 rounded-xl border text-xs font-bold flex items-center gap-2 ${syncStatus.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                  {syncStatus.message}
+                </div>
+              )}
+
+              <button onClick={handleSyncToGithub} disabled={isSyncing} className="w-full py-5 rounded-2xl bg-indigo-600 text-white font-black hover:bg-indigo-500 flex items-center justify-center gap-3 transition-all shadow-xl shadow-indigo-600/20 disabled:opacity-50">
+                {isSyncing ? <Loader2 className="animate-spin" /> : <RefreshCw size={20} />} GitHub 동기화 실행
+              </button>
             </div>
           </div>
         )}
       </main>
-      <div className="fixed bottom-8 right-8"><button onClick={() => { localStorage.setItem('cryptomagz_courses', JSON.stringify(courses)); onBack(); }} className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-10 py-5 rounded-full font-black text-lg shadow-xl flex items-center gap-3 transition-all"><Save size={24} /> 저장 후 종료</button></div>
+
+      <div className="fixed bottom-8 right-8 z-[60]">
+        <button 
+          onClick={() => { 
+            localStorage.setItem('cryptomagz_courses', JSON.stringify(courses)); 
+            localStorage.setItem('cryptomagz_previews', JSON.stringify(previews));
+            onBack(); 
+          }} 
+          className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-10 py-5 rounded-full font-black text-lg shadow-2xl flex items-center gap-3 transition-all active:scale-95"
+        >
+          <Save size={24} /> 저장 후 종료
+        </button>
+      </div>
     </div>
   );
 };
