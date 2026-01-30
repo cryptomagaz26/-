@@ -54,7 +54,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30">
       {view !== 'admin' && <Navbar onHomeClick={handleHomeClick} />}
       <main>
         {view === 'home' && (<HomeView courses={courses} previews={previews} onCourseSelect={handleCourseSelect} />)}
@@ -65,7 +65,7 @@ const App: React.FC = () => {
       </main>
 
       {view === 'home' && (
-        <footer className="bg-slate-900/50 border-t border-slate-800 py-16 mt-20">
+        <footer className="bg-black border-t border-slate-900 py-16 mt-20">
           <div className="max-w-7xl mx-auto px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
               <div className="col-span-1 md:col-span-2 space-y-6">
@@ -91,7 +91,7 @@ const App: React.FC = () => {
                 </ul>
               </div>
             </div>
-            <div className="border-t border-slate-800/50 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="border-t border-slate-900 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
               <div className="text-[11px] text-slate-500 space-y-2 font-medium">
                 <p>주식회사 크립토매거진 | 대표자 : 송진우</p>
                 <p>서울특별시 강남구 논현로 106길 16-4(역삼동)</p>

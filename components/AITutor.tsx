@@ -78,13 +78,13 @@ const AITutor: React.FC<AITutorProps> = ({ context, courseTitle }) => {
         </button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.05),transparent)]">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar bg-slate-950">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[88%] p-4 rounded-2xl text-sm leading-relaxed break-keep ${
               m.role === 'user' 
                 ? 'bg-indigo-600 text-white shadow-lg font-medium' 
-                : 'bg-slate-800/80 border border-slate-700 text-slate-200'
+                : 'bg-slate-900 border border-slate-800 text-slate-200'
             }`}>
               {m.content}
             </div>
@@ -92,7 +92,7 @@ const AITutor: React.FC<AITutorProps> = ({ context, courseTitle }) => {
         ))}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-slate-800/80 p-4 rounded-2xl flex gap-1.5">
+            <div className="bg-slate-900 p-4 rounded-2xl flex gap-1.5 border border-slate-800">
               <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></span>
               <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
               <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -109,7 +109,7 @@ const AITutor: React.FC<AITutorProps> = ({ context, courseTitle }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="강의 내용 중 궁금한 점을 물어보세요..."
-            className="w-full bg-slate-950 border border-slate-700 rounded-2xl px-5 py-3 pr-12 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all placeholder:text-slate-600"
+            className="w-full bg-black border border-slate-700 rounded-2xl px-5 py-3 pr-12 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all placeholder:text-slate-600 text-white"
           />
           <button 
             onClick={handleSend}

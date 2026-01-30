@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Course, PreviewVideo, Lesson } from '../types.ts';
-import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload, Video, Plus, Play } from 'lucide-react';
+import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload, Video, Plus, Play, Link as LinkIcon } from 'lucide-react';
 
 interface AdminDashboardProps {
   courses: Course[];
@@ -127,17 +127,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
     reader.readAsDataURL(file);
   };
 
-  const handleVideoUpload = (courseId: string, lessonId: string, file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      handleLessonUpdate(courseId, lessonId, 'videoUrl', base64String);
-    };
-    reader.readAsDataURL(file);
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-black text-slate-100 flex flex-col font-sans">
       <header className="h-20 bg-slate-900 border-b border-slate-800 px-8 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white"><ArrowLeft size={24} /></button>
@@ -150,7 +141,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
         </div>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full p-8">
+      <main className="flex-1 max-w-6xl mx-auto w-full p-8 bg-black">
         {activeTab === 'insights' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
             {previews.map((preview) => (
@@ -160,7 +151,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
                   <button onClick={() => onUpdatePreviews(previews.filter(p => p.id !== preview.id))} className="text-slate-600 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
                 </div>
                 
-                <div className="relative group aspect-video rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 mb-4">
+                <div className="relative group aspect-video rounded-2xl overflow-hidden border border-slate-800 bg-black mb-4">
                   <img src={preview.thumbnail} alt={preview.title} className="w-full h-full object-cover" />
                   <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
                     <Upload className="text-white mb-2" size={32} />
@@ -174,10 +165,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">영상 제목</label>
-                  <input value={preview.title} onChange={(e) => handlePreviewUpdate(preview.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-bold" placeholder="제목" />
+                  <input value={preview.title} onChange={(e) => handlePreviewUpdate(preview.id, 'title', e.target.value)} className="w-full bg-black border border-slate-800 rounded-xl p-4 text-sm font-bold text-white" placeholder="제목" />
                   
                   <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">YouTube ID / Link</label>
-                  <input value={preview.youtubeId} onChange={(e) => handlePreviewUpdate(preview.id, 'youtubeId', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-mono" placeholder="YouTube ID" />
+                  <input value={preview.youtubeId} onChange={(e) => handlePreviewUpdate(preview.id, 'youtubeId', e.target.value)} className="w-full bg-black border border-slate-800 rounded-xl p-4 text-sm font-mono text-white" placeholder="YouTube ID" />
                 </div>
               </div>
             ))}
@@ -197,12 +188,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
             {courses.map(course => (
               <div key={course.id} className="bg-slate-900 border border-slate-800 rounded-[3rem] p-8 md:p-12 space-y-10 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8">
-                   <button onClick={() => onUpdateCourses(courses.filter(c => c.id !== course.id))} className="p-4 text-slate-600 hover:text-red-500 transition-colors bg-slate-950 rounded-2xl border border-slate-800 shadow-lg"><Trash2 size={24} /></button>
+                   <button onClick={() => onUpdateCourses(courses.filter(c => c.id !== course.id))} className="p-4 text-slate-600 hover:text-red-500 transition-colors bg-black rounded-2xl border border-slate-800 shadow-lg"><Trash2 size={24} /></button>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-10">
                   <div className="w-full lg:w-80 space-y-6 flex-shrink-0">
-                    <div className="relative group aspect-[4/3] rounded-[2rem] overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
+                    <div className="relative group aspect-[4/3] rounded-[2rem] overflow-hidden border border-slate-800 bg-black shadow-inner">
                       <img src={course.thumbnail} className="w-full h-full object-cover" alt={course.title} />
                       <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
                         <Upload className="text-white mb-2" size={32} />
@@ -215,29 +206,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
                     </div>
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">카테고리</label>
-                      <input value={course.category} onChange={(e) => handleCourseUpdate(course.id, 'category', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
+                      <input value={course.category} onChange={(e) => handleCourseUpdate(course.id, 'category', e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-sm font-bold text-white" />
                     </div>
                   </div>
 
                   <div className="flex-1 space-y-8">
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의명 (Curriculum Title)</label>
-                      <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 font-black text-2xl italic tracking-tighter" />
+                      <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-5 font-black text-2xl italic tracking-tighter text-white" />
                     </div>
 
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의 상세 설명</label>
-                      <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 text-sm leading-relaxed" rows={4} />
+                      <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-5 text-sm leading-relaxed text-slate-300" rows={4} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강사명</label>
-                        <input value={course.instructor} onChange={(e) => handleCourseUpdate(course.id, 'instructor', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
+                        <input value={course.instructor} onChange={(e) => handleCourseUpdate(course.id, 'instructor', e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-sm font-bold text-white" />
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">수강료 (Price)</label>
-                        <input value={course.price} onChange={(e) => handleCourseUpdate(course.id, 'price', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
+                        <input value={course.price} onChange={(e) => handleCourseUpdate(course.id, 'price', e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-sm font-bold text-white" />
                       </div>
                     </div>
                   </div>
@@ -248,7 +239,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                       <Video className="text-emerald-500" size={24} />
-                      <h4 className="text-lg font-black uppercase tracking-tight italic">수업 리스트 (Lessons)</h4>
+                      <h4 className="text-lg font-black uppercase tracking-tight italic text-white">수업 리스트 (Lessons)</h4>
                     </div>
                     <button 
                       onClick={() => handleAddLesson(course.id)}
@@ -260,36 +251,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
 
                   <div className="space-y-4">
                     {course.lessons.map((lesson, idx) => (
-                      <div key={lesson.id} className="bg-slate-950 border border-slate-800 p-6 rounded-[2rem] flex flex-col md:flex-row gap-6 items-start md:items-center group hover:border-slate-700 transition-colors">
-                        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center font-black text-slate-500 flex-shrink-0 border border-slate-800">
+                      <div key={lesson.id} className="bg-black border border-slate-800 p-6 rounded-[2rem] flex flex-col md:flex-row gap-6 items-start md:items-center group hover:border-slate-700 transition-colors">
+                        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center font-black text-slate-600 flex-shrink-0 border border-slate-800">
                           {idx + 1}
                         </div>
                         
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                           <div className="space-y-1">
                             <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">수업 제목</label>
-                            <input value={lesson.title} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'title', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none" placeholder="레슨 제목" />
+                            <input value={lesson.title} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'title', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none text-white" placeholder="레슨 제목" />
                           </div>
                           <div className="space-y-1">
                             <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">강의 시간</label>
-                            <input value={lesson.duration} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'duration', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none" placeholder="00:00" />
+                            <input value={lesson.duration} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'duration', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none text-white" placeholder="00:00" />
                           </div>
                           <div className="flex items-end gap-2">
                              <div className="flex-1">
-                                <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">영상 파일</label>
-                                <label className="w-full flex items-center justify-center gap-2 bg-slate-900 border border-slate-800 rounded-xl p-3 text-[10px] font-black uppercase cursor-pointer hover:bg-slate-800 transition-colors">
-                                  <Upload size={14} /> {lesson.videoUrl ? '영상 교체' : '영상 업로드'}
-                                  <input type="file" accept="video/*" className="hidden" onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleVideoUpload(course.id, lesson.id, file);
-                                  }} />
-                                </label>
+                                <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest flex items-center gap-1.5"><Youtube size={10} className="text-red-500" /> 유튜브 영상 URL</label>
+                                <div className="relative">
+                                  <LinkIcon size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                                  <input 
+                                    value={lesson.videoUrl} 
+                                    onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'videoUrl', e.target.value)} 
+                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pl-9 text-xs font-bold focus:border-emerald-500 outline-none text-white" 
+                                    placeholder="https://youtube.com/watch?v=..." 
+                                  />
+                                </div>
                              </div>
                              {lesson.videoUrl && (
                                <button 
                                  onClick={() => window.open(lesson.videoUrl, '_blank')}
                                  className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20"
-                                 title="미리보기"
+                                 title="새 창에서 확인"
                                >
                                  <Play size={14} />
                                </button>
@@ -305,11 +298,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
                         </button>
                       </div>
                     ))}
-                    {course.lessons.length === 0 && (
-                      <div className="text-center py-12 border-2 border-dashed border-slate-800 rounded-[2rem] text-slate-600 font-medium italic">
-                        등록된 레슨이 없습니다. 새로운 레슨을 추가해 주세요.
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -335,7 +323,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
         )}
 
         {activeTab === 'sync' && (
-          <div className="max-w-xl mx-auto space-y-6 animate-in fade-in">
+          <div className="max-w-xl mx-auto space-y-6 animate-in fade-in bg-black">
             <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] space-y-6 shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
@@ -350,15 +338,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">GitHub Token</label>
-                  <input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs" placeholder="ghp_..." />
+                  <input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 font-mono text-xs text-white" placeholder="ghp_..." />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">Repository (Owner/Repo)</label>
-                  <input type="text" value={ghRepo} onChange={(e) => setGhRepo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm" placeholder="username/my-academy" />
+                  <input type="text" value={ghRepo} onChange={(e) => setGhRepo(e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-sm text-white" placeholder="username/my-academy" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">Data File Path</label>
-                  <input type="text" value={ghPath} onChange={(e) => setGhPath(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm" placeholder="src/data/mockData.ts" />
+                  <input type="text" value={ghPath} onChange={(e) => setGhPath(e.target.value)} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-sm text-white" placeholder="src/data/mockData.ts" />
                 </div>
               </div>
 

@@ -56,20 +56,20 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-8 py-12">
-      {/* Hero Section - Clean background without patterns */}
+    <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 bg-black">
+      {/* Hero Section - Solid Background */}
       <section className="relative mb-24 rounded-[3rem] overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl">
         <div className="relative z-10 p-10 md:p-20 max-w-5xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest mb-6 backdrop-blur">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-black uppercase tracking-widest mb-6">
             <Zap size={12} className="text-cyan-400" />
             cryptomagz exclusive
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.2] md:leading-[1.1] mb-8 tracking-tighter italic break-keep text-white">
             자산 관리의 새로운 기준,<br className="hidden md:block" />
-            <span className="not-italic bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">크립토매거진의 재테크 아카데미</span>
+            <span className="not-italic bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">크립토매거진 재테크 아카데미</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed font-medium break-keep max-w-2xl">
-            단순한 투자를 넘어 건강한 자산 생태계를 구축합니다. 기초부터 1:1 심화 코칭까지, cryptomagz만의 데이터 기반 실전 전략을 만나보세요.
+            단순한 투자를 넘어 건강한 자산 생태계를 구축합니다. 기초부터 1:1 심화 코칭까지, 데이터 기반 실전 전략을 만나보세요.
           </p>
           <div className="flex flex-wrap gap-4">
             <button 
@@ -80,7 +80,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
             </button>
             <button 
               onClick={() => document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-black text-lg border border-white/10 hover:bg-slate-700 transition-all"
+              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-black text-lg border border-slate-700 hover:bg-slate-700 transition-all"
             >
               수강 문의 (1:1)
             </button>
@@ -88,15 +88,15 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
         </div>
       </section>
 
-      {/* Feature Cards - Removed diagonal lines from background */}
+      {/* Feature Cards - Pure Solid Style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 relative">
         {[
           { icon: <TrendingUp className="text-emerald-400" />, title: "기업 재무 분석 교육", desc: "데이터 기반 매크로 분석" },
           { icon: <Wallet className="text-indigo-400" />, title: "체계적 자산 배분", desc: "주식·부동산·코인 통합" },
           { icon: <ShieldCheck className="text-cyan-400" />, title: "리스크 철저 관리", desc: "맞춤형 포트폴리오 검토" },
         ].map((item, i) => (
-          <div key={i} className="bg-slate-900 border border-slate-800 p-8 rounded-3xl flex items-center gap-6 hover:bg-slate-800 transition-colors shadow-lg">
-            <div className="w-14 h-14 rounded-2xl bg-slate-950 flex items-center justify-center border border-slate-800">
+          <div key={i} className="bg-slate-900 border border-slate-800 p-8 rounded-3xl flex items-center gap-6 shadow-lg">
+            <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-slate-800">
               {item.icon}
             </div>
             <div>
@@ -119,7 +119,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
             <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.youtubeId.includes('http') ? video.youtubeId : `https://youtube.com/watch?v=${video.youtubeId}`, '_blank')}>
               <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-800 mb-4 bg-slate-900">
                 <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-all">
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-all">
                   <PlayCircle size={48} className="text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" />
                 </div>
               </div>
@@ -137,7 +137,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h2 className="text-4xl font-black tracking-tight italic mb-2 text-white uppercase">프리미엄 커리큘럼</h2>
-            <p className="text-slate-500 font-medium">송진우 강사님과 함께하는 단계별 재테크 과정</p>
+            <p className="text-slate-500 font-medium">전문가와 함께하는 단계별 재테크 과정</p>
           </div>
           <div className="flex gap-2 bg-slate-900 p-1 rounded-2xl border border-slate-800">
             {['전체', '기초', '실전', '고급'].map(cat => (
@@ -152,13 +152,13 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
               className="group bg-slate-900 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-emerald-500/40 transition-all hover:-translate-y-2 cursor-pointer flex flex-col h-full shadow-lg"
               onClick={() => onCourseSelect(course)}
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
+              <div className="relative aspect-[4/3] overflow-hidden bg-black">
                 <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80"></div>
                 <div className="absolute bottom-6 left-8">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-emerald-500 text-slate-950 px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest">{course.category}</span>
-                    <span className="bg-slate-950/80 backdrop-blur px-3 py-1 rounded-xl text-[10px] font-black text-white uppercase tracking-widest border border-white/10">3개월 과정</span>
+                    <span className="bg-black/80 backdrop-blur px-3 py-1 rounded-xl text-[10px] font-black text-white uppercase tracking-widest border border-white/10">3개월 과정</span>
                   </div>
                 </div>
               </div>
@@ -190,15 +190,15 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
         </div>
       </section>
 
-      {/* Consultation Form - Cleaned background */}
+      {/* Consultation Form - Clean Solid Style */}
       <section id="consultation-form" className="relative py-20 px-8 md:px-16 rounded-[4rem] bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
         <div className="relative z-10 max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-4 italic tracking-tight uppercase text-white">강의 신청 상담 접수</h2>
-            <p className="text-slate-400 font-medium">크립토매거진 전문가가 직접 연락드려 상세한 수강 안내를 도와드립니다.</p>
+            <p className="text-slate-400 font-medium">전담 매니저가 직접 연락드려 상세한 수강 안내를 도와드립니다.</p>
           </div>
           {isSubmitted ? (
-            <div className="bg-emerald-500/10 border border-emerald-500/30 p-12 rounded-[2.5rem] text-center animate-in zoom-in-95 duration-500">
+            <div className="bg-black/40 border border-emerald-500/30 p-12 rounded-[2.5rem] text-center animate-in zoom-in-95 duration-500">
               <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20">
                 <Check size={40} className="text-slate-950" />
               </div>
@@ -210,17 +210,17 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2"><User size={12} className="text-emerald-500" /> 이름</label>
-                  <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="성함을 입력해주세요" className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all placeholder:text-slate-700 font-bold" />
+                  <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="성함을 입력해주세요" className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all placeholder:text-slate-700 font-bold" />
                 </div>
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2"><Phone size={12} className="text-emerald-500" /> 연락처</label>
-                  <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="010-0000-0000" className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all placeholder:text-slate-700 font-bold" />
+                  <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="010-0000-0000" className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all placeholder:text-slate-700 font-bold" />
                 </div>
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2"><BookOpen size={12} className="text-emerald-500" /> 희망강의 선택</label>
                 <div className="relative">
-                  <select required value={formData.course} onChange={(e) => setFormData({...formData, course: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer">
+                  <select required value={formData.course} onChange={(e) => setFormData({...formData, course: e.target.value})} className="w-full bg-black border border-slate-800 rounded-2xl p-4 text-white focus:border-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer">
                     <option value="" disabled>희망하시는 강의를 선택해주세요</option>
                     {courses.map(course => (<option key={course.id} value={course.title}>{course.title}</option>))}
                     <option value="기타 문의">기타 문의 / 커스텀 컨설팅</option>
@@ -233,7 +233,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onCourseSelect, courses, previews }
               <div className="flex items-center gap-3 py-4">
                 <label className="relative flex items-center cursor-pointer">
                   <input type="checkbox" checked={formData.agreement} onChange={(e) => setFormData({...formData, agreement: e.target.checked})} className="sr-only peer" />
-                  <div className="w-6 h-6 bg-slate-950 border border-slate-800 rounded-lg peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center">
+                  <div className="w-6 h-6 bg-black border border-slate-800 rounded-lg peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center">
                     <Check size={14} className={`text-slate-950 transition-opacity ${formData.agreement ? 'opacity-100' : 'opacity-0'}`} />
                   </div>
                   <span className="ml-3 text-sm font-bold text-slate-400"><span className="text-emerald-500 cursor-pointer">개인정보처리방침</span>을 확인하고 동의합니다.</span>
