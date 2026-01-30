@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar.tsx';
-import HomeView from './components/HomeView.tsx';
-import LearningView from './components/LearningView.tsx';
-import AdminDashboard from './components/AdminDashboard.tsx';
-import AdminLoginModal from './components/AdminLoginModal.tsx';
-import TermsOfServiceModal from './components/TermsOfServiceModal.tsx';
-import PrivacyPolicyModal from './components/PrivacyPolicyModal.tsx';
-import { Course, PreviewVideo } from './types.ts';
-import { COURSES as initialCourses, PREVIEWS as initialPreviews } from './data/mockData.ts';
+import Navbar from './components/Navbar';
+import HomeView from './components/HomeView';
+import LearningView from './components/LearningView';
+import AdminDashboard from './components/AdminDashboard';
+import AdminLoginModal from './components/AdminLoginModal';
+import TermsOfServiceModal from './components/TermsOfServiceModal';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
+import { Course, PreviewVideo } from './types';
+import { COURSES as initialCourses, PREVIEWS as initialPreviews } from './data/mockData';
 import { Shield } from 'lucide-react';
 
 const App: React.FC = () => {

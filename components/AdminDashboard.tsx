@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Course, PreviewVideo, Lesson } from '../types.ts';
+import { Course, PreviewVideo, Lesson } from '../types';
 import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload, Video, Plus, Play, Link as LinkIcon } from 'lucide-react';
 
 interface AdminDashboardProps {

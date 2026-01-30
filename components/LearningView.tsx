@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Course, Lesson } from '../types.ts';
-import AITutor from './AITutor.tsx';
+import { Course, Lesson } from '../types';
+import AITutor from './AITutor';
 import { ChevronLeft, Play, CheckCircle, Clock, BookOpen, Lock } from 'lucide-react';
 
 interface LearningViewProps {
