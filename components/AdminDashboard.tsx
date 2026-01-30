@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
-import { Course, PreviewVideo } from '../types';
-import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload } from 'lucide-react';
+import { Course, PreviewVideo, Lesson } from '../types.ts';
+import { Settings, Trash2, Youtube, Save, ArrowLeft, RefreshCw, Loader2, Image as ImageIcon, Upload, Video, Plus, Play } from 'lucide-react';
 
 interface AdminDashboardProps {
   courses: Course[];
@@ -12,14 +12,12 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUpdateCourses, onUpdatePreviews, onBack }) => {
-  const [activeTab, setActiveTab] = useState<'insights' | 'curriculum' | 'sync'>('insights');
+  const [activeTab, setActiveTab] = useState<'insights' | 'curriculum' | 'sync'>('curriculum');
   const [ghToken, setGhToken] = useState(localStorage.getItem('cm_gh_token') || '');
   const [ghRepo, setGhRepo] = useState(localStorage.getItem('cm_gh_repo') || '');
   const [ghPath, setGhPath] = useState(localStorage.getItem('cm_gh_path') || 'data/mockData.ts');
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const utf8ToBase64 = (str: string) => {
     const encoder = new TextEncoder();
@@ -79,6 +77,43 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
     onUpdateCourses(courses.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
 
+  const handleLessonUpdate = (courseId: string, lessonId: string, field: keyof Lesson, value: any) => {
+    onUpdateCourses(courses.map(c => {
+      if (c.id === courseId) {
+        return {
+          ...c,
+          lessons: c.lessons.map(l => l.id === lessonId ? { ...l, [field]: value } : l)
+        };
+      }
+      return c;
+    }));
+  };
+
+  const handleAddLesson = (courseId: string) => {
+    onUpdateCourses(courses.map(c => {
+      if (c.id === courseId) {
+        const newLesson: Lesson = {
+          id: `l-${Date.now()}`,
+          title: '새로운 레슨',
+          duration: '00:00',
+          videoUrl: '',
+          isCompleted: false
+        };
+        return { ...c, lessons: [...c.lessons, newLesson] };
+      }
+      return c;
+    }));
+  };
+
+  const handleDeleteLesson = (courseId: string, lessonId: string) => {
+    onUpdateCourses(courses.map(c => {
+      if (c.id === courseId) {
+        return { ...c, lessons: c.lessons.filter(l => l.id !== lessonId) };
+      }
+      return c;
+    }));
+  };
+
   const handleImageUpload = (id: string, type: 'preview' | 'course', file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -88,6 +123,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
       } else {
         handleCourseUpdate(id, 'thumbnail', base64String);
       }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleVideoUpload = (courseId: string, lessonId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      handleLessonUpdate(courseId, lessonId, 'videoUrl', base64String);
     };
     reader.readAsDataURL(file);
   };
@@ -110,7 +154,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
         {activeTab === 'insights' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
             {previews.map((preview) => (
-              <div key={preview.id} className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] space-y-4">
+              <div key={preview.id} className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] space-y-4 shadow-xl">
                 <div className="flex justify-between items-center">
                   <Youtube className="text-red-500" size={24} />
                   <button onClick={() => onUpdatePreviews(previews.filter(p => p.id !== preview.id))} className="text-slate-600 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
@@ -121,15 +165,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
                   <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
                     <Upload className="text-white mb-2" size={32} />
                     <span className="text-xs font-black text-white uppercase tracking-widest">썸네일 업로드</span>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden" 
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(preview.id, 'preview', file);
-                      }} 
-                    />
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(preview.id, 'preview', file);
+                    }} />
                   </label>
                 </div>
 
@@ -154,67 +193,150 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
         )}
 
         {activeTab === 'curriculum' && (
-          <div className="space-y-8 animate-in fade-in">
+          <div className="space-y-12 animate-in fade-in">
             {courses.map(course => (
-              <div key={course.id} className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-8 space-y-6">
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div className="w-full md:w-64 space-y-4 flex-shrink-0">
-                    <div className="relative group aspect-[4/3] rounded-3xl overflow-hidden border border-slate-800 bg-slate-950">
+              <div key={course.id} className="bg-slate-900 border border-slate-800 rounded-[3rem] p-8 md:p-12 space-y-10 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8">
+                   <button onClick={() => onUpdateCourses(courses.filter(c => c.id !== course.id))} className="p-4 text-slate-600 hover:text-red-500 transition-colors bg-slate-950 rounded-2xl border border-slate-800 shadow-lg"><Trash2 size={24} /></button>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-10">
+                  <div className="w-full lg:w-80 space-y-6 flex-shrink-0">
+                    <div className="relative group aspect-[4/3] rounded-[2rem] overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
                       <img src={course.thumbnail} className="w-full h-full object-cover" alt={course.title} />
                       <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
                         <Upload className="text-white mb-2" size={32} />
                         <span className="text-xs font-black text-white uppercase tracking-widest">강의 썸네일 변경</span>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleImageUpload(course.id, 'course', file);
-                          }} 
-                        />
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(course.id, 'course', file);
+                        }} />
                       </label>
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">카테고리</label>
-                      <input value={course.category} onChange={(e) => handleCourseUpdate(course.id, 'category', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-bold" />
+                      <input value={course.category} onChange={(e) => handleCourseUpdate(course.id, 'category', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-6">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 space-y-2 mr-4">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의명</label>
-                        <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-black text-lg" />
-                      </div>
-                      <button onClick={() => onUpdateCourses(courses.filter(c => c.id !== course.id))} className="p-3 text-slate-600 hover:text-red-500 transition-colors bg-slate-950 rounded-xl border border-slate-800"><Trash2 size={20} /></button>
+                  <div className="flex-1 space-y-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의명 (Curriculum Title)</label>
+                      <input value={course.title} onChange={(e) => handleCourseUpdate(course.id, 'title', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 font-black text-2xl italic tracking-tighter" />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강의 상세 설명</label>
-                      <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm leading-relaxed" rows={3} />
+                      <textarea value={course.description} onChange={(e) => handleCourseUpdate(course.id, 'description', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 text-sm leading-relaxed" rows={4} />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">강사명</label>
-                        <input value={course.instructor} onChange={(e) => handleCourseUpdate(course.id, 'instructor', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm font-bold" />
+                        <input value={course.instructor} onChange={(e) => handleCourseUpdate(course.id, 'instructor', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">수강료</label>
-                        <input value={course.price} onChange={(e) => handleCourseUpdate(course.id, 'price', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm font-bold" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">수강료 (Price)</label>
+                        <input value={course.price} onChange={(e) => handleCourseUpdate(course.id, 'price', e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm font-bold" />
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Lessons Management Section */}
+                <div className="border-t border-slate-800 pt-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <Video className="text-emerald-500" size={24} />
+                      <h4 className="text-lg font-black uppercase tracking-tight italic">수업 리스트 (Lessons)</h4>
+                    </div>
+                    <button 
+                      onClick={() => handleAddLesson(course.id)}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg shadow-indigo-600/20"
+                    >
+                      <Plus size={16} /> 레슨 추가
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {course.lessons.map((lesson, idx) => (
+                      <div key={lesson.id} className="bg-slate-950 border border-slate-800 p-6 rounded-[2rem] flex flex-col md:flex-row gap-6 items-start md:items-center group hover:border-slate-700 transition-colors">
+                        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center font-black text-slate-500 flex-shrink-0 border border-slate-800">
+                          {idx + 1}
+                        </div>
+                        
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">수업 제목</label>
+                            <input value={lesson.title} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'title', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none" placeholder="레슨 제목" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">강의 시간</label>
+                            <input value={lesson.duration} onChange={(e) => handleLessonUpdate(course.id, lesson.id, 'duration', e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs font-bold focus:border-emerald-500 outline-none" placeholder="00:00" />
+                          </div>
+                          <div className="flex items-end gap-2">
+                             <div className="flex-1">
+                                <label className="text-[9px] font-black uppercase text-slate-600 tracking-widest">영상 파일</label>
+                                <label className="w-full flex items-center justify-center gap-2 bg-slate-900 border border-slate-800 rounded-xl p-3 text-[10px] font-black uppercase cursor-pointer hover:bg-slate-800 transition-colors">
+                                  <Upload size={14} /> {lesson.videoUrl ? '영상 교체' : '영상 업로드'}
+                                  <input type="file" accept="video/*" className="hidden" onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleVideoUpload(course.id, lesson.id, file);
+                                  }} />
+                                </label>
+                             </div>
+                             {lesson.videoUrl && (
+                               <button 
+                                 onClick={() => window.open(lesson.videoUrl, '_blank')}
+                                 className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20"
+                                 title="미리보기"
+                               >
+                                 <Play size={14} />
+                               </button>
+                             )}
+                          </div>
+                        </div>
+
+                        <button 
+                          onClick={() => handleDeleteLesson(course.id, lesson.id)}
+                          className="p-3 text-slate-700 hover:text-red-500 transition-colors md:self-end mb-1"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    ))}
+                    {course.lessons.length === 0 && (
+                      <div className="text-center py-12 border-2 border-dashed border-slate-800 rounded-[2rem] text-slate-600 font-medium italic">
+                        등록된 레슨이 없습니다. 새로운 레슨을 추가해 주세요.
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
+            
+            <button 
+              onClick={() => onUpdateCourses([...courses, { 
+                id: `c-${Date.now()}`, 
+                title: '새로운 마스터 클래스', 
+                description: '강의에 대한 설명을 입력해 주세요.', 
+                thumbnail: 'https://images.unsplash.com/photo-1611974714024-4607a50d40f1?auto=format&fit=crop&w=800&q=80', 
+                instructor: '미지정', 
+                category: '기타', 
+                price: '0원', 
+                lessons: [] 
+              }])}
+              className="w-full border-2 border-dashed border-slate-800 rounded-[3rem] py-16 flex flex-col items-center justify-center text-slate-600 hover:text-emerald-500 hover:border-emerald-500/50 transition-all gap-4 bg-slate-900/20"
+            >
+              <Plus size={48} />
+              <span className="font-black uppercase tracking-widest text-lg">새로운 커리큘럼 추가하기</span>
+            </button>
           </div>
         )}
 
         {activeTab === 'sync' && (
           <div className="max-w-xl mx-auto space-y-6 animate-in fade-in">
-            <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] space-y-6">
+            <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] space-y-6 shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
                   <RefreshCw className="text-indigo-400" size={24} />
@@ -228,20 +350,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, previews, onUp
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">GitHub Token</label>
-                  <input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs" placeholder="ghp_..." />
+                  <input type="password" value={ghToken} onChange={(e) => setGhToken(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs" placeholder="ghp_..." />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">Repository (Owner/Repo)</label>
-                  <input type="text" value={ghRepo} onChange={(e) => setGhRepo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm" placeholder="username/my-academy" />
+                  <input type="text" value={ghRepo} onChange={(e) => setGhRepo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm" placeholder="username/my-academy" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-slate-500">Data File Path</label>
-                  <input type="text" value={ghPath} onChange={(e) => setGhPath(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm" placeholder="src/data/mockData.ts" />
+                  <input type="text" value={ghPath} onChange={(e) => setGhPath(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm" placeholder="src/data/mockData.ts" />
                 </div>
               </div>
 
               {syncStatus && (
-                <div className={`p-4 rounded-xl border text-xs font-bold flex items-center gap-2 ${syncStatus.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                <div className={`p-4 rounded-2xl border text-xs font-bold flex items-center gap-2 ${syncStatus.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
                   {syncStatus.message}
                 </div>
               )}
