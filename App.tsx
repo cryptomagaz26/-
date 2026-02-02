@@ -18,21 +18,36 @@ const App: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [courses, setCourses] = useState<Course[]>(() => {
-    const saved = localStorage.getItem('cryptomagz_courses');
-    return saved ? JSON.parse(saved) : initialCourses;
-  });
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [previews, setPreviews] = useState<PreviewVideo[]>(initialPreviews);
 
-  const [previews, setPreviews] = useState<PreviewVideo[]>(() => {
-    const saved = localStorage.getItem('cryptomagz_previews');
-    return saved ? JSON.parse(saved) : initialPreviews;
-  });
-
+  // GitHub에서 실시간 데이터 가져오기
   useEffect(() => {
-    localStorage.setItem('cryptomagz_courses', JSON.stringify(courses));
-    localStorage.setItem('cryptomagz_previews', JSON.stringify(previews));
-  }, [courses, previews]);
+    const fetchLatestData = async () => {
+      const repo = localStorage.getItem('cm_gh_repo');
+      const path = localStorage.getItem('cm_gh_path') || 'data.json';
+      
+      // 설정된 정보가 있을 때만 GitHub에서 데이터를 가져옵니다.
+      if (repo) {
+        try {
+          const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
+          if (response.ok) {
+            const data = await response.json();
+            const decodedContent = JSON.parse(decodeURIComponent(atob(data.content).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+            if (decodedContent.courses) setCourses(decodedContent.courses);
+            if (decodedContent.previews) setPreviews(decodedContent.previews);
+          }
+        } catch (error) {
+          console.error("GitHub 데이터 로드 실패:", error);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    fetchLatestData();
+  }, []);
 
   const handleCourseSelect = (course: Course) => {
     setSelectedCourse(course);
@@ -52,6 +67,17 @@ const App: React.FC = () => {
       setIsLoginModalOpen(true);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+          <span className="text-zinc-500 font-bold text-sm tracking-widest uppercase">Loading Assets...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-emerald-500/30">
